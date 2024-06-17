@@ -1,19 +1,26 @@
+import 'package:examen2/src/models/usuario.dart';
+import 'package:examen2/src/pages/docente_pages/docente_page.dart';
+import 'package:examen2/src/providers/docente_provider.dart';
+import 'package:examen2/src/services/usuario_service.dart';
 import 'package:examen2/src/widgets/login_form.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends ConsumerState<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String email = '';
+  String username = '';
   String password = '';
   @override
   Widget build(BuildContext context) {
+    final usuario = ref.watch(usuarioProvider);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Stack(
@@ -85,22 +92,28 @@ class _LoginPageState extends State<LoginPage> {
                             child: Column(
                               children: [
                                 LoginForm(
-                                  label: 'Correo Electrónico',
-                                  hint: 'correo',
-                                  icon: Icons.alternate_email,
-                                  onChanged: (value) => email = value,
+                                  label: 'Usuario',
+                                  hint: 'nombre de usuario',
+                                  icon: Icons.account_box,
+                                  onChanged: (value) => username = value,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Ingrese un correo';
-                                    }
-                                    final emailRegExp = RegExp(
-                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                    );
-                                    if (!emailRegExp.hasMatch(value)) {
-                                      return 'Formato de correo no válido';
+                                      return 'Ingrese su nombre de usuario';
                                     }
                                     return null;
                                   },
+                                  // validator: (value) {
+                                  //   if (value == null || value.isEmpty) {
+                                  //     return 'Ingrese un correo';
+                                  //   }
+                                  //   final emailRegExp = RegExp(
+                                  //     r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                  //   );
+                                  //   if (!emailRegExp.hasMatch(value)) {
+                                  //     return 'Formato de correo no válido';
+                                  //   }
+                                  //   return null;
+                                  // },
                                 ),
                                 const SizedBox(
                                   height: 25.0,
@@ -130,6 +143,15 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () async {
                               final isValid = _formKey.currentState!.validate();
                               if (!isValid) return;
+                              await login(username, password, ref);
+                              if (ref.watch(usuarioProvider).username.isNotEmpty) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const DocentePage()));
+                              } else {
+                                const SnackBar(
+                                  content: Text('Credenciales incorrectas'),
+                                );
+                              }
                             },
                             style: const ButtonStyle(
                                 backgroundColor: WidgetStatePropertyAll<Color>(

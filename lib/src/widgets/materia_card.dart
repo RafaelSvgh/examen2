@@ -1,6 +1,9 @@
+import 'package:examen2/src/providers/docente_provider.dart';
+import 'package:examen2/src/security/token_security.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Widget tarjetaMateria(String gestion, String materia, String grupo) {
+Widget tarjetaMateria(WidgetRef ref) {
   return Container(
     width: 170.0,
     height: 210.0,
@@ -20,10 +23,16 @@ Widget tarjetaMateria(String gestion, String materia, String grupo) {
             "https://img.freepik.com/vector-gratis/fondo-degradado-lineas-azules-dinamicas_23-2148995756.jpg?t=st=1717188717~exp=1717192317~hmac=dfb1587598579db60d4921f74a7a9812fa7244cfb4089b13ed149d5237122346&w=996",
           ),
         ),
-        Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-            child: Text('[$gestion] $materia - $grupo')),
-        TextButton(onPressed: () {}, child: const Text('Ver asistencia'))
+        // Container(
+        //     margin:
+        //         const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        //     child: Text('[$gestion] $materia - $grupo')),
+        TextButton(
+            onPressed: () async {
+              String? token = await getToken();
+              print(token);
+            },
+            child: const Text('Ver asistencia'))
       ],
     ),
   );
