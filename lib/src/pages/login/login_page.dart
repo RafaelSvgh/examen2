@@ -19,8 +19,6 @@ class LoginPageState extends ConsumerState<LoginPage> {
   String password = '';
   @override
   Widget build(BuildContext context) {
-    final usuario = ref.watch(usuarioProvider);
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Stack(
@@ -38,8 +36,8 @@ class LoginPageState extends ConsumerState<LoginPage> {
                         begin: Alignment.topLeft,
                         end: Alignment.topRight,
                         colors: [
-                          Color.fromARGB(255, 144, 167, 185),
-                          Color.fromARGB(255, 61, 95, 113)
+                          Color.fromARGB(255, 93, 102, 106),
+                          Color.fromARGB(255, 93, 102, 106)
                         ])),
               ),
             ),
@@ -50,8 +48,8 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 children: [
                   const Center(
                       child: Icon(
-                    Icons.how_to_reg,
-                    size: 80.0,
+                    Icons.person_pin_circle,
+                    size: 90.0,
                     color: Color.fromARGB(217, 255, 255, 255),
                   )),
                   const SizedBox(
@@ -59,7 +57,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   const Center(
                       child: Text(
-                    'DOCENTES',
+                    'UNIV-SYS',
                     style: TextStyle(
                         fontSize: 35.0,
                         letterSpacing: 3.0,
@@ -94,7 +92,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                 LoginForm(
                                   label: 'Usuario',
                                   hint: 'nombre de usuario',
-                                  icon: Icons.account_box,
+                                  icon: Icons.person,
                                   onChanged: (value) => username = value,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
@@ -121,7 +119,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                 LoginForm(
                                   label: 'Contraseña',
                                   hint: 'contraseña',
-                                  icon: Icons.lock_person,
+                                  icon: Icons.lock,
                                   password: true,
                                   onChanged: (value) => password = value,
                                   validator: (value) {
@@ -144,7 +142,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                               final isValid = _formKey.currentState!.validate();
                               if (!isValid) return;
                               await login(username, password, ref);
-                              if (ref.watch(usuarioProvider).username.isNotEmpty) {
+                              if (ref
+                                  .watch(usuarioProvider)
+                                  .username
+                                  .isNotEmpty) {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => const DocentePage()));
                               } else {
@@ -155,7 +156,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                             },
                             style: const ButtonStyle(
                                 backgroundColor: WidgetStatePropertyAll<Color>(
-                                    Color.fromARGB(255, 70, 112, 148))),
+                                    Color.fromARGB(255, 102, 106, 109))),
                             child: const Text(
                               'Ingresar',
                               style: TextStyle(

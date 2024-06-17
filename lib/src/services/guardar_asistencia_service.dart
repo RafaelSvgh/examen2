@@ -12,7 +12,7 @@ Future<void> updateAsistencia(int id, String fecha, String estado, String hora, 
   try {
     dio.options.headers['Authorization'] = 'Bearer $token';
     final response =
-        await dio.put('http://10.0.2.2:8080/api/docente/update/$id', 
+        await dio.put('http://10.0.2.2:8080/api/asistencia/update/$id', 
         data: {
           "id": id,
           "estado": estado,

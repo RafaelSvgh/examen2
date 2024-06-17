@@ -1,7 +1,6 @@
 import 'package:examen2/src/models/asistencia.dart';
-import 'package:examen2/src/pages/docente_pages/docente_materias_page.dart';
 import 'package:examen2/src/pages/docente_pages/docente_page.dart';
-import 'package:examen2/src/pages/docente_pages/docente_perfil_page.dart';
+import 'package:examen2/src/pages/docente_pages/docente_reportes_page.dart';
 import 'package:examen2/src/pages/login/login_page.dart';
 import 'package:examen2/src/providers/docente_provider.dart';
 import 'package:examen2/src/services/guardar_asistencia_service.dart';
@@ -27,8 +26,6 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
   Widget build(BuildContext context) {
     final pages = [
       const DocentePage(),
-      const DocentePerfilPage(),
-      const DocenteMateriasPage(),
       const LoginPage()
     ];
     return Scaffold(
@@ -49,12 +46,8 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
           datosDeUsuario(ref),
           const NavigationDrawerDestination(
               icon: Icon(Icons.home), label: Text('Inicio')),
-          const NavigationDrawerDestination(
-              icon: Icon(Icons.account_circle), label: Text('Perfil')),
-          const NavigationDrawerDestination(
-              icon: Icon(Icons.auto_stories), label: Text('Materias')),
           const SizedBox(
-            height: 200.0,
+            height: 400.0,
           ),
           const NavigationDrawerDestination(
               icon: Icon(Icons.logout), label: Text('Cerrar Sesión')),
@@ -63,7 +56,7 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           for (var asistencia in ref.watch(asistenciaProvider)) {
-            if (asistencia.estado == 'f') {
+            if (asistencia.estado == 'F') {
               Asistencia enviarAsistencia = asistencia;
               tz.TZDateTime now =
                   tz.TZDateTime.now(tz.getLocation('America/La_Paz'));
@@ -80,7 +73,7 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
               DateTime hora3 = DateTime(
                   now.year, now.month, now.day, time.hour, time.minute);
 
-              if (fechaClase != fechaActual) {
+              if (fechaClase == fechaActual) {
                 DateTime horaActual =
                     DateTime(0, 1, 1, hora1.hour, hora1.minute);
                 DateTime horaInicio =
@@ -92,6 +85,7 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
                 if (horaActual.isAfter(horaInicio) &&
                     horaActual.isBefore(horaInicioMasQuince)) {
                   enviarAsistencia.estado = 'P';
+                  asistencia.estado = 'P';
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
@@ -108,15 +102,25 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
                                 children: [
                                   TextButton(
                                       onPressed: () async {
+                                        enviarAsistencia.estado = 'L';
                                         asistencia.estado = 'L';
                                         if (_justificacion.text.isNotEmpty) {
+                                          String hora = "";
+                                          if (now.minute < 10) {
+                                            hora = '${now.hour}:0${now.minute}';
+                                          } else {
+                                            hora = '${now.hour}:${now.minute}';
+                                          }
+                                          if (hora.length == 4) {
+                                            hora = '0$hora';
+                                          }
                                           await updateAsistencia(
-                                              asistencia.id,
+                                              enviarAsistencia.id,
                                               fechaActual,
-                                              asistencia.estado,
-                                              '${now.hour}:${now.minute}',
-                                              asistencia.observacion,
-                                              asistencia.horarioId);
+                                              enviarAsistencia.estado,
+                                              hora,
+                                              enviarAsistencia.observacion,
+                                              enviarAsistencia.horarioId);
                                         }
                                         Navigator.pop(context);
                                       },
@@ -124,13 +128,22 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
                                           style: TextStyle(fontSize: 18.0))),
                                   TextButton(
                                       onPressed: () async {
+                                        String hora = "";
+                                        if (now.minute < 10) {
+                                          hora = '${now.hour}:0${now.minute}';
+                                        } else {
+                                          hora = '${now.hour}:${now.minute}';
+                                        }
+                                        if (hora.length == 4) {
+                                            hora = '0$hora';
+                                          }
                                         await updateAsistencia(
-                                            asistencia.id,
+                                            enviarAsistencia.id,
                                             fechaActual,
-                                            asistencia.estado,
-                                            '${now.hour}:${now.minute}',
-                                            asistencia.observacion,
-                                            asistencia.horarioId);
+                                            enviarAsistencia.estado,
+                                            hora,
+                                            enviarAsistencia.observacion,
+                                            enviarAsistencia.horarioId);
                                         Navigator.pop(context);
                                       },
                                       child: const Text(
@@ -157,7 +170,9 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
                 if (horaActual.isAfter(horaInicioMasQuince) &&
                     horaActual.isBefore(horaFin)) {
                   enviarAsistencia.estado = 'R';
+                  asistencia.estado = 'R';
                   enviarAsistencia.observacion = 'atraso';
+                  asistencia.observacion = 'atraso';
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
@@ -174,15 +189,25 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
                                 children: [
                                   TextButton(
                                       onPressed: () async {
+                                        enviarAsistencia.estado = 'L';
                                         asistencia.estado = 'L';
                                         if (_justificacion.text.isNotEmpty) {
+                                          String hora = "";
+                                          if (now.minute < 10) {
+                                            hora = '${now.hour}:0${now.minute}';
+                                          } else {
+                                            hora = '${now.hour}:${now.minute}';
+                                          }
+                                          if (hora.length == 4) {
+                                            hora = '0$hora';
+                                          }
                                           await updateAsistencia(
-                                              asistencia.id,
+                                              enviarAsistencia.id,
                                               fechaActual,
-                                              asistencia.estado,
-                                              '${now.hour}:${now.minute}',
-                                              asistencia.observacion,
-                                              asistencia.horarioId);
+                                              enviarAsistencia.estado,
+                                              hora,
+                                              enviarAsistencia.observacion,
+                                              enviarAsistencia.horarioId);
                                         }
                                         Navigator.pop(context);
                                       },
@@ -190,13 +215,22 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
                                           style: TextStyle(fontSize: 18.0))),
                                   TextButton(
                                       onPressed: () async {
+                                        String hora = "";
+                                        if (now.minute < 10) {
+                                          hora = '${now.hour}:0${now.minute}';
+                                        } else {
+                                          hora = '${now.hour}:${now.minute}';
+                                        }
+                                        if (hora.length == 4) {
+                                            hora = '0$hora';
+                                          }
                                         await updateAsistencia(
-                                            asistencia.id,
+                                            enviarAsistencia.id,
                                             fechaActual,
-                                            asistencia.estado,
-                                            '${now.hour}:${now.minute}',
-                                            asistencia.observacion,
-                                            asistencia.horarioId);
+                                            enviarAsistencia.estado,
+                                            hora,
+                                            enviarAsistencia.observacion,
+                                            enviarAsistencia.horarioId);
                                         Navigator.pop(context);
                                       },
                                       child: const Text(
@@ -232,17 +266,27 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
         child: ListView(
             children: (ref.watch(asistenciaProvider).map((asistencia) {
           bool check = false;
-          DateTime fech = asistencia.fecha;
+          String estado = "falta";
 
           String fecha =
               '${asistencia.fecha.day}-${asistencia.fecha.month}-${asistencia.fecha.year}';
-          if (asistencia.estado == 'p') {
+          if (asistencia.estado == 'P' || asistencia.estado == 'R') {
             check = true;
           }
-          return CheckboxListTile(
+          if (asistencia.estado == 'P') {
+            estado = 'presente';
+          }
+          if (asistencia.estado == 'R') {
+            estado = 'atraso';
+          }
+          if (asistencia.estado == 'L') {
+            estado = 'licencia';
+          }
+
+          return SwitchListTile(
             value: check,
             onChanged: (value) {},
-            title: Text('${asistencia.dia} | $fecha'),
+            title: Text('${asistencia.dia} | $fecha  | $estado'),
             subtitle: Text(
                 '${asistencia.horaInicio.substring(0, 5)} - ${asistencia.horaFin.substring(0, 5)}  aula: ${asistencia.aula}|${asistencia.modulo}'),
             dense: true,

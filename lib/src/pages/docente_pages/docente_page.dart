@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:examen2/src/models/carga_horaria.dart';
 import 'package:examen2/src/pages/docente_pages/docente_asistencia_page.dart';
-import 'package:examen2/src/pages/docente_pages/docente_materias_page.dart';
-import 'package:examen2/src/pages/docente_pages/docente_perfil_page.dart';
+import 'package:examen2/src/pages/docente_pages/docente_reportes_page.dart';
 import 'package:examen2/src/pages/login/login_page.dart';
 import 'package:examen2/src/providers/docente_provider.dart';
 import 'package:examen2/src/security/token_security.dart';
@@ -34,18 +33,14 @@ class DocentePageState extends ConsumerState<DocentePage> {
 
   @override
   Widget build(BuildContext context) {
-    final docente = ref.watch(docenteProvider);
-    final CargaHoraria = ref.watch(cargaHorariaProvider);
-
     final pages = [
       const DocentePage(),
-      const DocentePerfilPage(),
-      const DocenteMateriasPage(),
+      const DocenteReportePage(),
       const LoginPage()
     ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Panel docente'),
+        title: const Text(''),
         centerTitle: true,
       ),
       drawer: NavigationDrawer(
@@ -62,11 +57,9 @@ class DocentePageState extends ConsumerState<DocentePage> {
           const NavigationDrawerDestination(
               icon: Icon(Icons.home), label: Text('Inicio')),
           const NavigationDrawerDestination(
-              icon: Icon(Icons.account_circle), label: Text('Perfil')),
-          const NavigationDrawerDestination(
-              icon: Icon(Icons.auto_stories), label: Text('Materias')),
+              icon: Icon(Icons.sticky_note_2), label: Text('Reportes')),
           const SizedBox(
-            height: 200.0,
+            height: 400.0,
           ),
           const NavigationDrawerDestination(
               icon: Icon(Icons.logout), label: Text('Cerrar Sesión')),
@@ -105,7 +98,8 @@ class DocentePageState extends ConsumerState<DocentePage> {
                                 topLeft: Radius.circular(5.0),
                                 topRight: Radius.circular(5.0)),
                             child: Image.network(
-                              "https://img.freepik.com/vector-gratis/fondo-degradado-lineas-azules-dinamicas_23-2148995756.jpg?t=st=1717188717~exp=1717192317~hmac=dfb1587598579db60d4921f74a7a9812fa7244cfb4089b13ed149d5237122346&w=996",
+                              // "https://img.freepik.com/vector-gratis/fondo-degradado-lineas-azules-dinamicas_23-2148995756.jpg?t=st=1717188717~exp=1717192317~hmac=dfb1587598579db60d4921f74a7a9812fa7244cfb4089b13ed149d5237122346&w=996",
+                              "https://img.freepik.com/vector-gratis/fondo-monocromatico-blanco-degradado_23-2149023435.jpg?t=st=1717205309~exp=1717208909~hmac=a9072afba28b7f39abd2448cfee1afdc3ac8d58255002ac000a6ae26da4ebb6b&w=996",
                             ),
                           ),
                           Container(
@@ -120,9 +114,10 @@ class DocentePageState extends ConsumerState<DocentePage> {
                                   List<Horario> horarios = carga.horarios;
                                   getAsistencias(ref, horarios);
                                   Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const DocenteAsistenciaPage()));
+                                      builder: (context) =>
+                                          const DocenteAsistenciaPage()));
                                 },
-                                child: const Text('Ver asistencia')),
+                                child: const Text('Asistencia')),
                           )
                         ],
                       ),
