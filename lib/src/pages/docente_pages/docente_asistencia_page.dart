@@ -1,16 +1,16 @@
 import 'package:examen2/src/models/asistencia.dart';
 import 'package:examen2/src/pages/docente_pages/docente_page.dart';
-import 'package:examen2/src/pages/docente_pages/docente_reportes_page.dart';
 import 'package:examen2/src/pages/login/login_page.dart';
 import 'package:examen2/src/providers/docente_provider.dart';
 import 'package:examen2/src/services/guardar_asistencia_service.dart';
-import 'package:examen2/src/widgets/asistencia_docente.dart';
-import 'package:examen2/src/widgets/datos_usuario.dart';
+import 'package:examen2/src/services/reporte_excel.dart';
+import 'package:examen2/src/services/reporte_pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:url_launcher/url_launcher.dart';
 
 class DocenteAsistenciaPage extends ConsumerStatefulWidget {
   const DocenteAsistenciaPage({super.key});
@@ -24,33 +24,50 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
   final TextEditingController _justificacion = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final pages = [
-      const DocentePage(),
-      const LoginPage()
-    ];
+    final pages = [const DocentePage(), const LoginPage()];
     return Scaffold(
       appBar: AppBar(
         title: const Text('Asistencia'),
         centerTitle: true,
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons
+                  .menu_book_rounded), // Cambia este icono por el que prefieras
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
       ),
       drawer: NavigationDrawer(
-        onDestinationSelected: (value) {
-          setState(() {
-            index = value;
-          });
-          final item = pages[index];
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => item));
-        },
         children: [
-          datosDeUsuario(ref),
-          const NavigationDrawerDestination(
-              icon: Icon(Icons.home), label: Text('Inicio')),
           const SizedBox(
-            height: 400.0,
+            height: 20.0,
           ),
-          const NavigationDrawerDestination(
-              icon: Icon(Icons.logout), label: Text('Cerrar Sesión')),
+          TextButton.icon(
+            onPressed: () async {
+              List<Asistencia> asistencias = ref.watch(asistenciaProvider);
+              String url = await reportePdf(asistencias);
+              await launch(url);
+            },
+            label: const Text('Reporte en PDF'),
+            icon: const Icon(Icons.picture_as_pdf),
+          ),
+          const Divider(
+            endIndent: 10.0,
+            indent: 10.0,
+          ),
+          TextButton.icon(
+            onPressed: () async {
+              List<Asistencia> asistencias = ref.watch(asistenciaProvider);
+              String url = await reporteExcel(asistencias);
+              await launch(url);
+            },
+            label: const Text('Reporte en Excel'),
+            icon: const Icon(Icons.table_view),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -135,8 +152,8 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
                                           hora = '${now.hour}:${now.minute}';
                                         }
                                         if (hora.length == 4) {
-                                            hora = '0$hora';
-                                          }
+                                          hora = '0$hora';
+                                        }
                                         await updateAsistencia(
                                             enviarAsistencia.id,
                                             fechaActual,
@@ -222,8 +239,8 @@ class DocenteAsistenciaPageState extends ConsumerState<DocenteAsistenciaPage> {
                                           hora = '${now.hour}:${now.minute}';
                                         }
                                         if (hora.length == 4) {
-                                            hora = '0$hora';
-                                          }
+                                          hora = '0$hora';
+                                        }
                                         await updateAsistencia(
                                             enviarAsistencia.id,
                                             fechaActual,

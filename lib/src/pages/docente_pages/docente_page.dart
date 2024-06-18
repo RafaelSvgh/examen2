@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:examen2/src/models/carga_horaria.dart';
 import 'package:examen2/src/pages/docente_pages/docente_asistencia_page.dart';
-import 'package:examen2/src/pages/docente_pages/docente_reportes_page.dart';
 import 'package:examen2/src/pages/login/login_page.dart';
 import 'package:examen2/src/providers/docente_provider.dart';
 import 'package:examen2/src/security/token_security.dart';
@@ -35,7 +34,6 @@ class DocentePageState extends ConsumerState<DocentePage> {
   Widget build(BuildContext context) {
     final pages = [
       const DocentePage(),
-      const DocenteReportePage(),
       const LoginPage()
     ];
     return Scaffold(
